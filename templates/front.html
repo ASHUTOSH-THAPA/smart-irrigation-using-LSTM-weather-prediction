@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>irrigation system</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"> 
+    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+    <meta http-equiv="refresh" content="60">
+</head>
+<body>
+   
+        <div class="navbar">
+            <div class="logo">
+                <i class="fa-solid fa-droplet" style="color: #FFD43B;"></i> 
+                <span>Smart irrigation</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#aboutus">aboutus</a></li>
+                <li><a href="#weather">Weather</a></li>
+                <li><a href="#analytics">analytics</a></li>
+            </ul>
+        </div>
+<section class="hero">
+    <h2>Smart Irrigation System</h2>
+    <p>
+        AI-powered smart irrigation systems leverage advanced algorithms to monitor soil moisture levels, weather conditions, and plant requirements.
+    </p>
+    <a href="#dashboard" class="btn">View Dashboard</a>
+</section>
+<section class="dashboard" id="dashboard">
+    <h2 class="section-title">Irrigation Dashboard</h2>
+    <div class="cards">
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-cloud-moon"></i>
+                <h3>Weather Prediction</h3>  
+                <form method="POST" action="/">
+                    <input type="text" id="location" placeholder="enter city" name="location" value="{{city if city else ''}}" onchange="this.form.submit()">
+                    <div id="refreshcountdown" class="countdown">auto refresh in 60 second</div>      
+                </form>    
+                </div>
+            <h3 class="h3">Current Weather</h3>
+            <div class="current-weather">
+                {% if current %}
+                <i class="fa-solid fa-sun fa-bounce" style="color: #FFD43B;"></i>
+                <p>{{current.temperature}}°C</p>
+                {% else %}
+                <p>not weather data available</p>
+                {% endif %}
+            </div>
+            <div class="descrip">    
+                {% if current %}
+                    <p>{{current.description}}</p>
+                    <p>Humidity:{{current.humidity}}</p>
+                    <p>Wind:{{current.wind_gust_speed}}km/h</p>
+                {% else %}
+                    </div>
+                    <h3 class="h3">Rain Prediction</h3>
+                    {% if prediction %}
+                    <p>{{prediction}}</p>
+                    {% endif %}
+                {% endif %}
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-water"></i>
+                <h3>Crop information</h3>
+            </div>
+                <form class="crop-form" action="/" method="POST">
+                    <div class="form-group">
+                        <label>Select crop/plant:</label><br>
+                        <select class="select" name="crop">
+                            <option value="">--select a crop--</option>
+                            <option value="Wheat" {% if crop == 'Wheat' %}selected{% endif %} > Wheat</option>
+                            <option Value="Rice" {% if crop == 'Rice' %}selected{% endif %} > Rice</option>
+                            <option value="Corn" {% if crop == 'Corn' %}selected{% endif %} > Corn</option>
+                            <option value="Tomato" {% if crop == 'Tomato' %}selected{% endif %} > Tomato</option>
+                            <option value="Potato" {% if crop == 'Potato' %}selected{% endif %} > Potato</option>
+                            <option value="Cotton" {% if crop == 'Cotton' %}selected{% endif %} > Cotton</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>growth-stage:</label><br>
+                        <select class="select" name="growth_stage">
+                            <option value="Seedling" {% if growth_stage == 'Seedling' %}selected{% endif %} > Seedling</option>
+                            <option value="Vegetative" {% if growth_stage == 'Vegetative' %}selected{% endif %} >  Vegetative</option>
+                            <option value="Flowering" {% if growth_stage == 'Flowering' %}selected{% endif %} > Flowering</option>
+                            <option value="fruiting" {% if growth_stage == 'Fruiting' %}selected{% endif %} >   Fruiting</option>
+                            <option value="Mature" {% if growth_stage == 'Mature' %}selected{% endif %} > Mature</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Soil Type:</label><br>
+                        <select class="select" name="soil_type">
+                            <option value="Clay" {% if soil_type == 'Clay' %}selected{% endif %} > clay</option>
+                            <option value="Sandy" {% if soil_type == 'Sandy' %}selected{% endif %} > sandy</option>
+                            <option value="Loamy" {% if soil_type == 'Loamy' %}selected{% endif %} > loamy</option>
+                            <option value="Silty" {% if soil_type == 'Silty' %}selected{% endif %} > silty</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-cal">Calculate Water Needs</button>
+            </form>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-file-waveform"></i>
+                <h3>Irrigation Recommendation</h3>
+            </div>
+            <div class="recommendation">
+                {% if water_need %}
+                <h4>Water need:</h4>
+                <div class="recommendation-item">{{water_need}} mm per week</div>
+                {% endif %}
+                {% if irrigation_recommendation %}
+                <div class="recommendation-item">
+                    <h4>Recommendation</h4>
+                    <p>{{irrigation_recommendation}}</p>
+                    </div>
+                {% endif %}
+                {% if irrigation_schedule %}
+                <div class="recommendation-item">
+                    <h4>Irrigation schedule</h4>
+                    <p>{{irrigation_schedule}}</p>
+                </div>
+                {% endif %}
+                {% if not water_need and not irrigation_recommendation and not irrigation_schedule %}
+                <p>Select crop details to get irrigation recommendations</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+<section class="alert-section">
+    <div class="alert-cards">
+        <h1>Alert & Notification</h1>
+        <div class="alert-temp">
+            <i class="fa-solid fa-triangle-exclamation" style="color: #FFD43B;"></i>
+            <h3>High temperature expected</h3>  
+        </div>
+        <div class="alert-rain b">
+            <i class="fa-solid fa-cloud-rain" style="color: #4c76bd;"></i>
+            <h3>Rain predicted</h3>
+        </div>
+    </div>
+</section>
+<section>
+    <div>
+        <h3>Help</h3>
+    </div>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.crop-form').addEventListener('submit', function(e) {
+        console.log('Form submitted');
+    });
+});
+</script>
+</body>
+</html>
